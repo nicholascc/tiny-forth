@@ -38,7 +38,7 @@
                      "<sequence> = <[whitespace]> [element] (<whitespace> element)* <[whitespace]>"
                      "<element> = word | number | list"
                      "whitespace = #'\\s+'"
-                     "word = ('\\'') | (#'[a-zA-Z\\+\\-\\\\*\\<\\>=]'+)"
+                     "word = ('\\'') | (#'[a-zA-Z\\+\\-\\\\*\\<\\>=/]'+)"
                      "number = '0' | (#'[1-9]' #'[0-9]'*)"))
 
 (defn forth-transform [parsed]
@@ -86,7 +86,9 @@
                         (recur (rest program) vars (rest stack)))
               "+"   (recur (rest program) vars (operation-binary stack +))
               "-"   (recur (rest program) vars (operation-binary stack -))
-              "mod"   (recur (rest program) vars (operation-binary stack mod))
+              "*"   (recur (rest program) vars (operation-binary stack *))
+              "/"   (recur (rest program) vars (operation-binary stack /))
+              "mod" (recur (rest program) vars (operation-binary stack mod))
               "="   (recur (rest program) vars (operation-binary stack =))
               ">"   (recur (rest program) vars (operation-binary stack >))
               "<"   (recur (rest program) vars (operation-binary stack <))
@@ -120,10 +122,12 @@
               "defproc" (recur (rest program)
                                (assoc vars (first stack) (nth stack 1))
                                (nthrest stack 2))
-              "eval" (recur (rest program)
-                            vars
-                            (conj (nthrest stack 2)
-                                  (first (forth-eval (first stack) vars (nth stack 1)))))
+              "eval" (let [[new-stack new-vars] (forth-eval (first stack) vars (rest stack))]
+                       (recur (rest program) new-vars new-stack))
+              "eval-with" (recur (rest program)
+                                 vars
+                                 (conj (nthrest stack 2)
+                                       (first (forth-eval (first stack) vars (nth stack 1)))))
               (if (contains? vars instruction)
                 (let [[new-stack new-vars] (forth-eval (get vars instruction) vars stack)]
                   (recur (rest program) new-vars new-stack))
@@ -150,19 +154,20 @@
        :else [elem-type item " "]))])
 
 (defn editor-component []
-  (let [result (atom '())
+  (let [final-stack (atom '())
         program (atom (.getItem (.-localStorage js/window) :src))]
     (fn []
       [:form {:on-submit #(do
                             (.preventDefault %)
                             (print "Running program...")
                             (reset! program-output '[])
-                            (reset! result (-> @program
-                                               (forth-parse)
-                                               (forth-transform)
-                                               (forth-eval {} '())
-                                               (first)
-                                               )))}
+                            (reset! final-stack '())
+                            (reset! final-stack (-> @program
+                                                    (forth-parse)
+                                                    (forth-transform)
+                                                    (forth-eval {} '())
+                                                    (first)
+                                                   )))}
 
        [editor-input program]
        [:br]
@@ -170,7 +175,7 @@
                 :value "Run"}]
        [:br]
        [:h5 "Final stack:"]
-       [display-output @result :span#output-span]
+       [display-output @final-stack :span#output-span]
        [:br]
        [:h5 "Output:"]
        [:div#output (display-output @program-output :p#output-p)]])))
