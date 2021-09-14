@@ -152,8 +152,9 @@
         program (atom (.getItem (.-localStorage js/window) :src))]
     (fn []
       [:form {:on-submit #(do
-                            (print "Running program...\n\n")
                             (.preventDefault %)
+                            (print "Running program...")
+                            (reset! program-output '[])
                             (reset! result (-> @program
                                                (forth-parse)
                                                (forth-transform)
