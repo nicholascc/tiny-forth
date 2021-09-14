@@ -66,6 +66,8 @@
         (apply op x)
         (concat x (nthrest stack n))))
 
+(def program-output (atom '[]))
+
 (defn forth-eval [start-program start-vars start-stack]
   (loop [program start-program
          vars start-vars
@@ -75,12 +77,12 @@
       (let [instruction (first program)]
         ;(print instruction vars stack)
         (cond
-          (or (seq? instruction) (number? instruction) (= instruction '()))
+          (or (seq? instruction) (number? instruction) )
             (recur (rest program) vars (conj stack instruction))
           (string? instruction)
             (case instruction
               "print" (do
-                        (print (first stack))
+                        (swap! program-output #(conj % (first stack)))
                         (recur (rest program) vars (rest stack)))
               "+"   (recur (rest program) vars (operation-binary stack +))
               "-"   (recur (rest program) vars (operation-binary stack -))
@@ -137,14 +139,13 @@
 (defn stack-element [stack]
   (str/join ", " stack))
 
-(defn display-output [result]
+(defn display-output [result elem-type]
   [:span
    (for [item result]
      (cond
-       (seq? item) [:span "[ " (display-output item) "] "]
-       (boolean? item) [:span (if item ":true" ":false") " "]
-       (nil? item) "[ ]"
-       :else [:span item " "]))])
+       (seq? item) [elem-type "[ " (display-output item :span) "] "]
+       (boolean? item) [elem-type (if item ":true" ":false") " "]
+       :else [elem-type item " "]))])
 
 (defn editor-component []
   (let [result (atom '())
@@ -159,12 +160,17 @@
                                                (forth-eval {} '())
                                                (first)
                                                )))}
-       [display-output @result]
-       [:br]
+
        [editor-input program]
        [:br]
        [:input {:type "submit"
-                :value "Run"}]])))
+                :value "Run"}]
+       [:br]
+       [:h5 "Final stack:"]
+       [display-output @result :span#output-span]
+       [:br]
+       [:h5 "Output:"]
+       [:div#output (display-output @program-output :p#output-p)]])))
 
 (defn home-page []
   (fn []
