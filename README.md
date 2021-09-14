@@ -2,7 +2,7 @@
 
 A simple stack-based programming language written in ClojureScript to run in the browser. The non-boilerplate portion of the codebase, including the editor, interpreter, and parser, is less than 150 lines of code.
 
-The website editor looks like this, and includes a saving mechanism with `localStorage`. Below the program input is the stack at the end of the program's execution, and the program's output (through the command `print`). 
+The website editor looks like this, and includes a saving mechanism with `localStorage`. The program outputs the stack at the end of the program's execution, and the program's output (through the command `print`). 
 
 <img src="https://user-images.githubusercontent.com/34197135/133296453-ab9b6255-9710-469c-b1e6-f79f67277a80.png" alt="An image of the browser-based editor, showing a text box for entering the program, a button to run the program, and a text-based display of the output of the program and the stack at the end of the program's execution." height="400">
 
