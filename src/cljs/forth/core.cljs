@@ -100,9 +100,6 @@
               "false" (recur (rest program) vars (conj stack false))
 
               "choose" (recur (rest program) vars (operation-single-return stack 3 #(if %1 %2 %3)))
-              "break-if" (if (first stack)
-                           (list (rest stack) vars)
-                           (recur (rest program) vars (rest stack)))
 
               "del" (recur (rest program) vars (rest stack))
               "dup" (recur (rest program) vars (operation-multiple-return stack 1 #(list % %)))
@@ -167,7 +164,7 @@
                                                     (forth-transform)
                                                     (forth-eval {} '())
                                                     (first)
-                                                   )))}
+                                                    )))}
 
        [editor-input program]
        [:br]
