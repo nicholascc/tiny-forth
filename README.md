@@ -165,11 +165,21 @@ if
 ' while defproc
 ```
 
-The input is a stack which is the starting stack of the loop and a body, which is evaluated with the stack. Each time the body is evaluated with the stack the first element of the final stack is removed and is treated as a boolean for whether or not to continue. For example, the following program counts up from 3 to 10:
+The input is a stack which is the starting stack of the loop and a body, which is evaluated with the stack. Each time the body is evaluated with the stack the first element of the final stack is removed and is treated as a boolean for whether or not to continue. For example, the following program prints the squares of the numbers from 1 to 10:
 
 ```
-[3] [1 + dup 10 <] while
- => 10
+[1] [1 + dup dup * print dup 11 <] while
+ |=> 1
+ |=> 4
+ |=> 9
+ |=> 16
+ |=> 25
+ |=> 36
+ |=> 49
+ |=> 64
+ |=> 81
+ |=> 100
+ => 11
 ```
 
 And the following program implements [Fizz Buzz](https://rosettacode.org/wiki/FizzBuzz) from 0 to 50:
