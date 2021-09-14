@@ -182,6 +182,22 @@ The input is a stack which is the starting stack of the loop and a body, which i
  => 11
 ```
 
+The following program prints the first 10 fibonacci numbers starting with 1, 2, etc.:
+
+```
+[0 1 0]
+[
+ swap
+ 2 pull
+ swap dup
+ 2 pull
+ +
+ dup print
+ 2 pull
+ 1 + dup 10 <
+] while
+```
+
 And the following program implements [Fizz Buzz](https://rosettacode.org/wiki/FizzBuzz) from 0 to 50:
 
 ```
