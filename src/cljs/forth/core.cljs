@@ -120,8 +120,10 @@
               "defproc" (recur (rest program)
                                (assoc vars (first stack) (nth stack 1))
                                (nthrest stack 2))
-              "eval" (let [[new-stack new-vars] (forth-eval (first stack) vars (rest stack))]
-                       (recur (rest program) new-vars new-stack))
+              "eval" (recur (rest program)
+                            vars
+                            (conj (nthrest stack 2)
+                                  (first (forth-eval (first stack) vars (nth stack 1)))))
               (if (contains? vars instruction)
                 (let [[new-stack new-vars] (forth-eval (get vars instruction) vars stack)]
                   (recur (rest program) new-vars new-stack))
