@@ -163,8 +163,7 @@
                                                     (forth-parse)
                                                     (forth-transform)
                                                     (forth-eval {} '())
-                                                    (first)
-                                                    )))}
+                                                    (first))))}
 
        [editor-input program]
        [:br]
